@@ -11,49 +11,131 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            font-family: 'Arial', sans-serif;
-            background-color: #ffebee;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff0f3;
             overflow: hidden;
         }
-        h1 { color: #d32f2f; }
-        .buttons { position: relative; margin-top: 20px; }
-        button {
-            padding: 15px 25px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            border-radius: 10px;
-            border: none;
-            margin: 10px;
+
+        h1 {
+            color: #ff4d6d;
+            font-size: 2.5rem;
+            text-align: center;
+            z-index: 1;
         }
-        #yesBtn { background-color: #4caf50; color: white; }
-        #noBtn {
-            background-color: #f44336;
+
+        .container { text-align: center; }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        #yesBtn {
+            background-color: #ff4d6d;
             color: white;
-            position: absolute;
+            margin-right: 20px;
+            z-index: 1;
+        }
+
+        #noBtn {
+            background-color: #ffffff;
+            color: #ff4d6d;
+            position: fixed;
+            transition: all 0.2s ease;
+            z-index: 999;
+        }
+
+        /* Heart Animation Styling */
+        .heart {
+            position: fixed;
+            color: #ff4d6d;
+            font-size: 20px;
+            user-select: none;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 3s linear forwards;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y)) rotate(360deg);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
 
-    <h1>Will you be my Valentine? ❤️</h1>
-    
-    <div class="buttons">
-        <button id="yesBtn" onclick="alert('I knew it! I love you! ❤️')">Yes</button>
+    <div class="container">
+        <h1 id="question">Will you be my Valentine? ❤️</h1>
+        <button id="yesBtn" onclick="celebrate()">Yes</button>
         <button id="noBtn">No</button>
     </div>
 
     <script>
         const noBtn = document.getElementById('noBtn');
 
-        noBtn.addEventListener('mouseover', () => {
-            // Calculate random positions
-            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+        // The "Run Away" Logic
+        const moveButton = () => {
+            const maxX = window.innerWidth - noBtn.offsetWidth;
+            const maxY = window.innerHeight - noBtn.offsetHeight;
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+        };
+
+        noBtn.addEventListener('mouseenter', moveButton);
+        noBtn.addEventListener('click', moveButton);
+
+        // The "Celebration" Logic
+        function celebrate() {
+            document.getElementById('question').innerText = "YAY! I Love You! ❤️";
+            noBtn.style.display = 'none'; // Hide the "No" button
             
-            // Move the button
-            noBtn.style.left = `${x}px`;
-            noBtn.style.top = `${y}px`;
-        });
+            // Create 50 hearts
+            for (let i = 0; i < 50; i++) {
+                createHeart();
+            }
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerText = '❤️';
+            
+            // Start heart at the center
+            heart.style.left = '50%';
+            heart.style.top = '50%';
+            
+            // Randomize travel direction
+            const xVal = (Math.random() - 0.5) * window.innerWidth * 1.5;
+            const yVal = (Math.random() - 0.5) * window.innerHeight * 1.5;
+            
+            heart.style.setProperty('--x', `${xVal}px`);
+            heart.style.setProperty('--y', `${yVal}px`);
+            
+            // Randomize size
+            heart.style.fontSize = Math.random() * 20 + 20 + 'px';
+
+            document.body.appendChild(heart);
+
+            // Remove heart from DOM after animation finishes
+            setTimeout(() => {
+                heart.remove();
+            }, 3000);
+        }
     </script>
 </body>
 </html>
